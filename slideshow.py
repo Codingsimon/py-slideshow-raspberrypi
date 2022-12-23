@@ -9,8 +9,24 @@
 import argparse
 import random
 import os
-
 import pyglet
+import configparser
+
+from numpy import size
+
+
+speed = 0
+subfolder = "random"
+images_size = 0
+image_paths = []
+
+def import_config():
+    parser = configparser.ConfigParser()
+    parser.read('config.txt')
+    global speed 
+    speed = float(parser.get('Konfiguration', 'geschwindigkeit'))
+    global subfolder 
+    subfolder = parser.get('Konfiguration', 'bilderpfad')
 
 
 def update_pan_zoom_speeds():
@@ -33,10 +49,22 @@ def update_zoom(dt):
 
 
 def update_image(dt):
-    img = pyglet.image.load(random.choice(image_paths))
+    try:
+        img = pyglet.image.load(random.choice(image_paths))
+    except:
+        print("Exception image file not found.")
+
     sprite.image = img
-    sprite.scale = get_scale(window, img)
-    sprite.x = 0
+    scale_factor = get_scale(window, img)
+    sprite.scale = scale_factor
+
+    #set image x position
+    x_offset = (window.width - img.width*scale_factor) / 2
+    if x_offset > 0 :
+        sprite.x = x_offset
+    else:
+        sprite.x = 0
+
     sprite.y = 0
     update_pan_zoom_speeds()
     window.clear()
@@ -50,7 +78,6 @@ def get_image_paths(input_dir='.'):
                 path = os.path.abspath(os.path.join(root, file))
                 paths.append(path)
     return paths
-
 
 def get_scale(window, image):
     if image.width > image.height:
@@ -67,22 +94,27 @@ window = pyglet.window.Window(fullscreen=True)
 def on_draw():
     sprite.draw()
 
+def load_images():
+    global image_paths
+    if subfolder == 'random':
+        image_paths = get_image_paths(args.dir + "/images")
+    else:
+        image_paths = get_image_paths(args.dir + "/images/" + subfolder)
 
 if __name__ == '__main__':
-    _pan_speed_x, _pan_speed_y, _zoom_speed = update_pan_zoom_speeds()
+
+    import_config()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('dir', help='directory of images',
-                        nargs='?', default=os.getcwd())
+    parser.add_argument('dir', help='directory of images', nargs='?', default=os.getcwd())
     args = parser.parse_args()
 
-    image_paths = get_image_paths(args.dir)
+    load_images()
+
     img = pyglet.image.load(random.choice(image_paths))
     sprite = pyglet.sprite.Sprite(img)
     sprite.scale = get_scale(window, img)
 
-    pyglet.clock.schedule_interval(update_image, 6.0)
-    pyglet.clock.schedule_interval(update_pan, 1/60.0)
-    pyglet.clock.schedule_interval(update_zoom, 1/60.0)
+    pyglet.clock.schedule_interval(update_image, speed)
 
     pyglet.app.run()

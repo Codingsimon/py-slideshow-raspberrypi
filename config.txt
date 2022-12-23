@@ -1,0 +1,6 @@
+[Konfiguration]
+# Einstellungen für das Anzeigen der Bilder
+geschwindigkeit = 6
+
+# Unterordner aus dem die Bilder angezeigt werden. Bei Wert random werden zufällig Bilder aus allen Ordnern angezeigt.
+bilderpfad = random
