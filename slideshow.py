@@ -14,7 +14,6 @@ import configparser
 
 from numpy import size
 
-
 speed = 0
 subfolder = "random"
 images_size = 0
@@ -101,6 +100,8 @@ def load_images():
     else:
         image_paths = get_image_paths(args.dir + "/images/" + subfolder)
 
+
+
 if __name__ == '__main__':
 
     import_config()
@@ -116,5 +117,4 @@ if __name__ == '__main__':
     sprite.scale = get_scale(window, img)
 
     pyglet.clock.schedule_interval(update_image, speed)
-
     pyglet.app.run()
