@@ -1,6 +1,6 @@
 import os
 import flask
-#import slideshow
+import subprocess
 from flask import Flask, render_template
 from flask_milligram import Milligram
 
@@ -13,5 +13,8 @@ def hello_world():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    os.system("python slideshow.py")
+    print("before")
+    #os.system("python slideshow.py")
+    subprocess.Popen(["python","slideshow.py"])
+    print("after")
     app.run(debug=True)
